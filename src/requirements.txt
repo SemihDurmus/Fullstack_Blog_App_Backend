@@ -1,9 +1,12 @@
 asgiref==3.3.1
 autopep8==1.5.4
 Django==3.1.5
+django-nested-admin==3.3.3
 djangorestframework==3.12.2
 pycodestyle==2.6.0
 python-decouple==3.4
+python-monkey-business==1.0.0
 pytz==2020.5
+six==1.15.0
 sqlparse==0.4.1
 toml==0.10.2
