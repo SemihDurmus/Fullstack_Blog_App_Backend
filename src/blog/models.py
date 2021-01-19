@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import json
 
 
 class Category(models.Model):
@@ -10,6 +11,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def post_count(self):
+        return self.post_set.count()
+        # _set is to reach a value of a child from parent
 
 
 class Post(models.Model):
@@ -41,8 +47,8 @@ class Post(models.Model):
     def view_count(self):
         return self.postview_set.all().count()
 
-    def comments(self):
-        return self.comment_set.all()
+    # def comments(self):
+    #     return self.comment_set.all()
 
 
 class Comment(models.Model):
