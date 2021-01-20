@@ -1,10 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import Category, Post, Comment, Like, PostView
 from .serializers import CategorySerializer, PostSerializer, CommentSerializer, LikeSerializer, PostViewSerializer
+
+#from rest_framework.permissions import IsAuthenticated
+#from django.contrib.auth.decorators import login_required
 
 
 @api_view(["GET"])
@@ -13,6 +17,8 @@ def category_list(request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+
+# @login_required
 
 
 @api_view(["GET", "POST"])

@@ -47,8 +47,8 @@ class Post(models.Model):
     def view_count(self):
         return self.postview_set.all().count()
 
-    # def comments(self):
-    #     return self.comment_set.all()
+    def comments(self):
+        return self.comment_set.all()
 
 
 class Comment(models.Model):

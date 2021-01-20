@@ -12,7 +12,25 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
+class CommentSerializer(serializers.ModelSerializer):
+
+    commenter = serializers.StringRelatedField()
+
+    class Meta:
+        model = Comment
+        fields = (
+            "commenter",
+            "post",
+            "time_stamp",
+            "content"
+        )
+
+
 class PostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True)
+    author = serializers.StringRelatedField()
+    category = serializers.StringRelatedField()
+
     class Meta:
         model = Post
         fields = (
@@ -29,18 +47,7 @@ class PostSerializer(serializers.ModelSerializer):
             "comment_count",
             "like_count",
             "view_count",
-            # "comments"
-        )
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = (
-            "commenter",
-            "post",
-            "time_stamp",
-            "content"
+            "comments"
         )
 
 
