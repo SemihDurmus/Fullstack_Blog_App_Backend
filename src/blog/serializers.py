@@ -15,6 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
 
     commenter = serializers.StringRelatedField()
+    post = serializers.StringRelatedField()
 
     class Meta:
         model = Comment
@@ -43,11 +44,29 @@ class PostSerializer(serializers.ModelSerializer):
             "author",
             "author_avatar",
             "status",
+            "is_liked",
             "slug",
             "comment_count",
             "like_count",
             "view_count",
             "comments"
+        )
+
+
+class PostEditSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+    category = serializers.StringRelatedField()
+
+    class Meta:
+        model = Post
+        fields = (
+            "title",
+            "content",
+            "image_URL",
+            "category",
+            "update_date",
+            "author_avatar",
+            "status",
         )
 
 
