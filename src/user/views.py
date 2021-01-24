@@ -1,11 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
+
 from rest_framework import status
 from django.contrib.auth.models import User
 from .serializers import RegistrationSerializer, ProfileSerializer, UserSerializer
 from django.contrib import messages
 from .models import Profile
+
+# -------------------REGISTER----------------------
 
 
 @api_view(["POST"])
@@ -26,7 +32,11 @@ def RegisterView(request):
         }
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# -------------------USER GET UPDATE DELETE----------------------
 
+
+@login_required
+@permission_classes([IsAuthenticated])
 @api_view(["GET", "PUT", "DELETE"])
 def UserGetUpdateDelete(request, id):
     user = get_object_or_404(User, id=id)
@@ -46,7 +56,11 @@ def UserGetUpdateDelete(request, id):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+# -------------------PROFILE VIEW----------------------
 
+
+@login_required
+@permission_classes([IsAuthenticated])
 @api_view(["GET", "PUT"])
 def ProfileView(request, id):
     profile = get_object_or_404(Profile, id=id)
