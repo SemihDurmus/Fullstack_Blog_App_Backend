@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from .models import Category, Post, Comment, Like, PostView
+from django.db.models.query_utils import Q
 
 
 class CategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Category
         fields = (
@@ -28,9 +30,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True)
+    status = serializers.ChoiceField(choices=Post.OPTIONS)
+    comments = CommentSerializer(many=True, required=False)
     author = serializers.StringRelatedField()
     category = serializers.StringRelatedField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -52,9 +56,15 @@ class PostSerializer(serializers.ModelSerializer):
             "comments"
         )
 
+    def get_is_liked(self, obj):
+        request = self.context['request']
+        if request.user.is_authenticated:
+            if Post.objects.filter(Q(like__user=request.user) & Q(like__post=obj)).exists():
+                return True
+            return False
+
 
 class PostEditSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
     category = serializers.StringRelatedField()
 
     class Meta:

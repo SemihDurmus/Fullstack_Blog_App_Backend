@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import json
 
 
 class Category(models.Model):
@@ -39,15 +38,19 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    @property
     def comment_count(self):
         return self.comment_set.all().count()
 
+    @property
     def like_count(self):
         return self.like_set.all().count()
 
+    @property
     def view_count(self):
         return self.postview_set.all().count()
 
+    @property
     def comments(self):
         return self.comment_set.all()
 
