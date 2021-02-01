@@ -3,20 +3,20 @@ from django.http import JsonResponse
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 
 from .models import Category, Post, Comment, Like, PostView
 
 from .serializers import CategorySerializer, PostSerializer, CommentSerializer, PostViewSerializer, PostEditSerializer
 
-from django.contrib.auth.decorators import login_required
 from rest_framework.pagination import PageNumberPagination
 
 # ------------------------CATEGORY LIST---------------------
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def category_list(request):
     if request.method == "GET":
         categories = Category.objects.all()
@@ -27,6 +27,7 @@ def category_list(request):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def post_list(request):
     if request.method == "GET":
         paginator = PageNumberPagination()
@@ -40,9 +41,8 @@ def post_list(request):
 # ------------------------POST-CREATE-----------------------
 
 
-@login_required
-@permission_classes([IsAuthenticated])
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def post_create(request):
     if request.method == "POST":
         serializer = PostSerializer(
@@ -61,24 +61,28 @@ def post_create(request):
 
 
 # ------------------------POST-DETAIL---------------------
-@login_required
 @api_view(["GET"])
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
+    data = {
+        "message": "Log in to view details!"
+    }
     if request.method == "GET":
         if request.user.is_authenticated:
             view = PostView.objects.get_or_create(user=request.user, post=post)
             view_serializer = PostViewSerializer(view, data=request.data)
             if view_serializer.is_valid():
                 view_serializer.save()
-        serializer = PostSerializer(post, context={'request': request})
-        return Response(serializer.data)
+            serializer = PostSerializer(post, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+    return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # ------------------------POST-GET-UPDATE-DELETE---------------------
-@login_required
-@permission_classes([IsAuthenticated])
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
 def post_get_update_delete(request, slug):
     post = get_object_or_404(Post, slug=slug)
 
@@ -113,8 +117,8 @@ def post_get_update_delete(request, slug):
 # ------------------------COMMENT CREATE---------------------
 
 
-@login_required
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def comment_create_view(request, slug):
     post = get_object_or_404(Post, slug=slug)
     if request.method == "POST":
@@ -128,14 +132,13 @@ def comment_create_view(request, slug):
     data = {
         "message": "Comment could not be created !"
     }
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 # ------------------------COMMENT EDIT---------------------
 
 
-@login_required
-@permission_classes([IsAuthenticated])
 @api_view(["PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
 def comment_edit_view(request, slug, id):
     comment = get_object_or_404(Comment, id=id)
     if request.method == "PUT":
@@ -161,11 +164,11 @@ def comment_edit_view(request, slug, id):
         }
         return Response(error_data, status=status.HTTP_401_UNAUTHORIZED)
 
-# -------------------------LIKE VİEW----------------------------------
+# -------------------------LIKE----------------------------------
 
 
-@login_required()
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def like(request, slug):
     if request.method == 'POST':
         post = get_object_or_404(Post, slug=slug)

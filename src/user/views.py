@@ -3,7 +3,6 @@ from rest_framework.response import Response
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.decorators import login_required
 
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -35,11 +34,10 @@ def RegisterView(request):
 # -------------------USER GET UPDATE DELETE----------------------
 
 
-@login_required
-@permission_classes([IsAuthenticated])
 @api_view(["GET", "PUT", "DELETE"])
-def UserGetUpdateDelete(request, id):
-    user = get_object_or_404(User, id=id)
+@permission_classes([IsAuthenticated])
+def UserGetUpdateDelete(request):
+    user = get_object_or_404(User, id=request.user.id)
     if request.method == "GET":
         serializer = UserSerializer(user)
         return Response(serializer.data)
@@ -59,14 +57,13 @@ def UserGetUpdateDelete(request, id):
 # -------------------PROFILE VIEW----------------------
 
 
-@login_required
-@permission_classes([IsAuthenticated])
 @api_view(["GET", "PUT"])
-def ProfileView(request, id):
-    profile = get_object_or_404(Profile, id=id)
+@permission_classes([IsAuthenticated])
+def ProfileView(request):
+    profile = get_object_or_404(Profile, user=request.user)
 
     if request.method == "GET":
-        serializer = ProfileSerializer(profil)
+        serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
     if request.method == "PUT":

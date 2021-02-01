@@ -16,23 +16,32 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
 
-    commenter = serializers.StringRelatedField()
+    commenter_name = serializers.SerializerMethodField()
+    commenter = serializers.SerializerMethodField()
     post = serializers.StringRelatedField()
 
     class Meta:
         model = Comment
         fields = (
             "commenter",
+            "commenter_name",
             "post",
             "time_stamp",
             "content"
         )
 
+    def get_commenter_name(self, obj):
+        return obj.commenter.username
+
+    def get_commenter(self, obj):
+        return obj.commenter.id
+
 
 class PostSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(choices=Post.OPTIONS)
     comments = CommentSerializer(many=True, required=False)
-    author = serializers.StringRelatedField()
+    author_name = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
     is_liked = serializers.SerializerMethodField()
 
@@ -46,6 +55,7 @@ class PostSerializer(serializers.ModelSerializer):
             "publish_date",
             "update_date",
             "author",
+            "author_name",
             "author_avatar",
             "status",
             "is_liked",
@@ -62,6 +72,12 @@ class PostSerializer(serializers.ModelSerializer):
             if Post.objects.filter(Q(like__user=request.user) & Q(like__post=obj)).exists():
                 return True
             return False
+
+    def get_author_name(self, obj):
+        return obj.author.username
+
+    def get_author(self, obj):
+        return obj.author.id
 
 
 class PostEditSerializer(serializers.ModelSerializer):

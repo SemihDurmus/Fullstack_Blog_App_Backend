@@ -1,0 +1,10 @@
+✅ 01-BE-Setup Backend Development Environment fsh-37 
+✅ 02-BE-Create App Model (Blog Comment Like BlogView etc) fsh-38
+✅ 03-BE-Create Backend Endpoints and serializer classes fsh-39
+✅ 04-BE-Create Blog App/ View fsh-40
+✅ 05-BE-Create User app/model (Profile registration vb.) fsh-41
+✅ 06-BE-Defines User app/  Front End endpoints and serilizer classes fsh-42
+✅ 07-BE-Create User App/Views fsh-43
+✅ 08-BE-Create Authentication systems and give Views authentication and permissons fsh-44
+✅ 09-BE-Deploy Backend Project to Heroku fsh-45
+

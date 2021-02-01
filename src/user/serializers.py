@@ -1,7 +1,11 @@
 from django.db import models
+from django.db.models import fields
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Profile
+from dj_rest_auth.serializers import TokenSerializer
+
 
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -95,3 +99,32 @@ class UserSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
+
+# ------------------Token Serializer---------------------
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
+
+class ProfileTokenSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Profile
+        fields = ('image',)
+
+    def get_image(self, obj):
+        request = self.context['request']
+        profile = Profile.objects.get(user=request.user)
+        return print(profile.image)
+
+
+class CustomTokenSerializer(TokenSerializer):
+    user = UserTokenSerializer(read_only=True)
+    profile_image = ProfileTokenSerializer(read_only=True)
+
+    class Meta(TokenSerializer.Meta):
+        fields = ('key', 'user', 'profile_image')
